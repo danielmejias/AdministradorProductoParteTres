@@ -1,8 +1,6 @@
 import { React, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import * as productoServices from "./ProductosServices";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
-import { stringify } from "querystring";
 
 const ProductoDetalle = () => {
   const [productoProps, setProductoProps] = useState([]);
@@ -16,11 +14,72 @@ const ProductoDetalle = () => {
   useEffect(() => {
     loadProducto();
   }, []);
+
+  const [producto, setProducto] = useState({
+    title: "",
+    price: 0,
+    description: "",
+  });
+
+  const handleChange = (event) => {
+    setProducto({ ...producto, [event.target.name]: event.target.value });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const res = await productoServices.editProducto(id, producto);
+    res.status != 200 ? window.alert("Error") : window.alert("Updated");
+    window.location.reload();
+  };
+
+  const eliminarProducto = async (_id) => {
+    const res = await productoServices.deleteProducto(_id);
+    res.status != 200 ? window.alert("Error") : window.alert("Deleted");
+    // window.location.reload();
+    window.location.href = "/";
+  };
   return (
     <div className="row">
-      <h1>{productoProps.title}</h1>
-      <h3>Price: {productoProps.price}</h3>
-      <h3>Description: {productoProps.description}</h3>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="title"
+          id="title"
+          defaultValue={productoProps.title}
+          onChange={handleChange}
+        ></input>
+        <br />
+        <input
+          type="number"
+          name="precio"
+          id="precio"
+          defaultValue={productoProps.precio}
+          onChange={handleChange}
+        ></input>
+        <br />
+        <input
+          type="text"
+          name="description"
+          id="description"
+          defaultValue={productoProps.description}
+          onChange={handleChange}
+        ></input>
+        <br />
+        <div>
+          <button className="btn btn-primary">Submit</button>
+        </div>
+        <div>
+          <button
+            onClick={async () => {
+              await eliminarProducto(productoProps._id);
+            }}
+            className="btn btn-primary"
+          >
+            Eliminar
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

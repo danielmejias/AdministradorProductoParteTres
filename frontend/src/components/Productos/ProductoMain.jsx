@@ -12,6 +12,7 @@ const ProductoForm = () => {
     event.preventDefault();
     const res = await productoServices.createProductos(producto);
     res.status != 200 ? window.alert("Error") : window.alert("created");
+    window.location.reload();
   };
 
   return (
